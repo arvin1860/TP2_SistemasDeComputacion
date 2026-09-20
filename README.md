@@ -96,19 +96,21 @@ Para comprobar el funcionamiento de la rutina Assembly y analizar el uso del sta
 
 Se detiene la ejecución al comienzo de `convertir_gini`. El noveno parámetro se encuentra en `$rsp+8`. Al interpretarlo como `float`, GDB muestra `42.4000015`, correspondiente al índice GINI `42.4`.
 
-![Antes de ingresar a Assembly](imagenes/ANTES.png)
+<img width="567" height="128" alt="image" src="https://github.com/user-attachments/assets/5d710233-30b4-4b97-9aa5-a8eca4f0d39f" />
 
 ### Al finalizar la rutina Assembly
 
 Antes de ejecutar `ret`, el registro `%rax` contiene `0x2b`, equivalente a `43` en decimal. Esto demuestra que Assembly convirtió `42.4` a `42` y posteriormente sumó `1`.
 
-![Antes de ejecutar ret](imagenes/ANTES%20DE%20RET.png)
+<img width="501" height="183" alt="image" src="https://github.com/user-attachments/assets/bc3b5c97-4ce6-43a8-8522-1b8914727633" />
+
 
 ### Retorno al programa principal
 
 Luego de ejecutar `ret`, la ejecución vuelve a `main.c`. El registro `%rax` conserva el valor `43`, correspondiente al resultado devuelto por la rutina Assembly.
 
-![Retorno al main](imagenes/RETORNO%20AL%20MAIN.png)
+<img width="456" height="196" alt="image" src="https://github.com/user-attachments/assets/9bfbb00c-3e5a-4ff7-9a3b-2955aec01c33" />
+
 
 ## Tecnologías utilizadas
 
