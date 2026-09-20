@@ -1,1 +1,124 @@
-# TP2_SistemasDeComputacion
+# TP2 - Sistemas de Computación
+
+Trabajo Práctico N.º 2 de la materia Sistemas de Computación.
+## Integrantes
+
+- Mario Lautaro Marin Martinez
+- Florencia Tobares
+- Marcos Viera Colombo
+
+## Descripción
+
+El programa obtiene el índice GINI de Argentina desde la API REST del Banco Mundial.
+
+El dato obtenido es procesado en C y enviado a una rutina desarrollada en Assembly x86-64 utilizando la convención de llamadas System V AMD64.
+
+La rutina Assembly recibe el índice GINI como un valor de punto flotante, lo convierte a entero, le suma 1 y devuelve el resultado al programa en C.
+
+## Funcionamiento
+
+El flujo general del programa es:
+
+1-API REST del Banco Mundial
+
+2-Programa en C
+
+3-Índice GINI como float 
+
+4-Paso del parámetro mediante el stack
+
+5-Rutina Assembly x86-64
+
+6-Conversión de float a entero
+
+7-Suma de 1
+
+8-Retorno del resultado a C
+
+Para forzar el paso del índice GINI mediante el stack, se utiliza como noveno argumento de tipo float. Según la convención System V AMD64, los primeros ocho argumentos de punto flotante utilizan los registros XMM0-XMM7 y el argumento siguiente se almacena en el stack.
+
+## Archivos principales
+
+- `main.c`: consulta la API REST, obtiene el índice GINI y llama a la rutina Assembly.
+- `conversion.s`: rutina Assembly encargada de convertir el índice de float a entero y sumar 1.
+- `gini.c`: programa utilizado inicialmente para comprobar la comunicación con la API del Banco Mundial.
+- `.gitignore`: evita almacenar en Git archivos generados durante la compilación.
+
+## Requisitos
+
+El proyecto fue desarrollado para Linux x86-64.
+
+Se requiere:
+
+- GCC
+- GNU Assembler
+- GDB
+- libcurl
+- Git
+
+## Instalación de dependencias
+
+En Ubuntu, la biblioteca libcurl puede instalarse mediante:
+
+sudo apt install libcurl4-openssl-dev
+
+
+## Compilación
+
+Primero se ensambla el archivo Assembly:
+
+as --64 -g -o conversion.o conversion.s
+
+Luego se compila el programa en C:
+
+gcc -g -O0 -c main.c -o main.o
+
+Finalmente se enlazan el código C, el código Assembly y la biblioteca libcurl:
+
+gcc main.o conversion.o -lcurl -o programa
+
+## Ejecución
+
+Para ejecutar el programa:
+
+./programa
+
+Ejemplo de salida:
+
+Indice GINI de Argentina: 42.4
+GINI convertido a entero + 1: 43
+
+## Depuración con GDB
+
+Para comprobar el funcionamiento de la rutina Assembly y analizar el uso del stack se utilizó GDB.
+
+### Antes de ingresar a la rutina Assembly
+
+Se detiene la ejecución al comienzo de `convertir_gini`. El noveno parámetro se encuentra en `$rsp+8`. Al interpretarlo como `float`, GDB muestra `42.4000015`, correspondiente al índice GINI `42.4`.
+
+![Antes de ingresar a Assembly](imagenes/ANTES.png)
+
+### Al finalizar la rutina Assembly
+
+Antes de ejecutar `ret`, el registro `%rax` contiene `0x2b`, equivalente a `43` en decimal. Esto demuestra que Assembly convirtió `42.4` a `42` y posteriormente sumó `1`.
+
+![Antes de ejecutar ret](imagenes/ANTES%20DE%20RET.png)
+
+### Retorno al programa principal
+
+Luego de ejecutar `ret`, la ejecución vuelve a `main.c`. El registro `%rax` conserva el valor `43`, correspondiente al resultado devuelto por la rutina Assembly.
+
+![Retorno al main](imagenes/RETORNO%20AL%20MAIN.png)
+
+## Tecnologías utilizadas
+
+- C
+- Assembly x86-64
+- System V AMD64 ABI
+- GCC
+- GNU Assembler
+- GDB
+- libcurl
+- API REST del Banco Mundial
+- Git
+- GitHub
