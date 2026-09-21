@@ -43,6 +43,8 @@ Para forzar el paso del índice GINI mediante el stack, se utiliza como noveno a
 - `conversion.s`: rutina Assembly encargada de convertir el índice de float a entero y sumar 1.
 - `gini.c`: programa utilizado inicialmente para comprobar la comunicación con la API del Banco Mundial.
 - `.gitignore`: evita almacenar en Git archivos generados durante la compilación.
+- - `.gini_c.c`: Funcion que transforma numero decimal en entero y suma 1.
+- `main_c.c`: Main que utiliza como datos de entrada la informacion del Banco Mundial y asigna un valor a cada año.
 
 ## Requisitos
 
@@ -77,7 +79,19 @@ Finalmente se enlazan el código C, el código Assembly y la biblioteca libcurl:
 
 gcc main.o conversion.o -lcurl -o programa
 
-## Ejecución
+## Ejecucion (sin assembler)
+
+Pide los datos: con libcurl hace un GET a la URL de la API (país ARG, indicador SI.POV.GINI).
+
+Los guarda en memoria: la función escribir va juntando los pedazos que llegan en un buffer que crece con realloc, hasta tener el JSON completo como un string.
+
+Recorre el JSON: busca con strstr cada "date":" para leer el año y luego "value": para leer el valor.
+
+Filtra y convierte: si el valor es null, saltea ese año. Si no, strtod lo pasa a double y se lo entrega a gini_mas_uno_c, que lo trunca y suma 1.
+
+Muestra y limpia: imprime año: Gini valor -> resultado y libera la memoria con free.
+
+## Ejecución (con assembler)
 
 Para ejecutar el programa:
 
